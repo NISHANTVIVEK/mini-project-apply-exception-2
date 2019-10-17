@@ -1,0 +1,64 @@
+CREATE TABLE LOGIN(login_id varchar2(5),
+password varchar2(10),
+role varchar2(5)) ;
+
+INSERT INTO LOGIN VALUES ('1', '1','MAC');
+INSERT INTO LOGIN VALUES ('2', '2','MAC');
+INSERT INTO LOGIN VALUES ('3', '3','ADMIN');
+INSERT INTO LOGIN VALUES ('4', '4','ADMIN');
+
+SELECT * FROM LOGIN;
+commit;
+
+CREATE TABLE PROGRAMS_OFFERED( ProgramName varchar2(5), description varchar2(20), applicant_eligibility varchar2(40) , duration number, degree_certificate_offered varchar2(10));
+INSERT INTO PROGRAMS_OFFERED VALUES('CS' ,'COMPUTER SCIENCE','XII',4,'BE');
+INSERT INTO PROGRAMS_OFFERED VALUES('IT' ,'INFROMATION TECHNO','XII',4,'BE');
+INSERT INTO PROGRAMS_OFFERED VALUES('ENTC' ,'ELECTRONICS','XII',4,'BE');
+INSERT INTO PROGRAMS_OFFERED VALUES('EC' ,'ELECTRONICS AND COM','XII',4,'BE');
+INSERT INTO PROGRAMS_OFFERED VALUES('MECH' ,'MECHANICAL','XII',4,'BE');
+
+commit;
+
+CREATE TABLE PROGRAMS_SCHEDULED( Scheduled_program_id varchar2(10), ProgramName varchar2(5), Location varchar2(10), start_date varchar2(10), end_date varchar2(10), sessions_per_week number(2))
+INSERT INTO PROGRAMS_SCHEDULED VALUES('CS101','CS' ,'CSD','1/11/2019','1/1/2020',3);
+INSERT INTO PROGRAMS_SCHEDULED VALUES('IT101','IT' ,'CSD','1/11/2019','1/1/2020',3);
+INSERT INTO PROGRAMS_SCHEDULED VALUES('ENTC101','ENTC','CSD','1/11/2019','1/1/2020',3);
+INSERT INTO PROGRAMS_SCHEDULED VALUES('EC101','EC','ECDEPT','1/11/2019','1/1/2020',3);
+INSERT INTO PROGRAMS_SCHEDULED VALUES('MECH101','MECH','MECHDEPT','1/11/2019','1/1/2020',3);
+
+commit;
+
+
+
+------------------------------
+filter
+------------------------------
+public List<ProgramScheduled> viewProgramsByTimePeriod(int date1, int date2) {
+			String queryString = "SELECT * From ProgramScheduled  Where  start_date between" + date1 + " and " + date2;
+			List<ProgramScheduled> list = new ArrayList<ProgramScheduled>();
+			try (Connection conn = conFactory.getConnection();
+					Statement stmt = conn.createStatement();
+						) {
+					ResultSet rs = stmt.executeQuery(queryString);
+					while(rs.next())
+					{
+						ProgramScheduled prog = new ProgramScheduled();
+						
+					//System.out.println("------");
+					prog.setProgramId(rs.getString("SCHEDULED_PROGRAM_ID"));
+					prog.setProgramName(rs.getString("PROGRAMNAME"));
+					prog.setLocation(rs.getString("LOCATION"));
+					prog.setStartDate(rs.getString("START_DATE"));
+					prog.setEndDate(rs.getString("END_DATE"));
+					prog.setSessionsPerWeek(rs.getInt("SESSIONS_PER_WEEK"));
+					
+					//System.out.println("--"+prog);
+					list.add(prog);
+					}
+				}
+				 catch (SQLException e) {
+					System.err.format("SQL State:%s\n%s", e.getSQLState(), e.getMessage());
+				}
+				
+				return list;
+		}
